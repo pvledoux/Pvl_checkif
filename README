@@ -5,11 +5,17 @@ Description:
 
 Check if a value is in a list (default separator: |)
 
+You can use global vars in parameters, they will be parsed!
+
 ------------------------------------------------------
 
 Examples:
 {exp:pvl_checkif value="123" is_in="1|12|123" [separator="|"]}
 	<p>Yes Sire!</p>
+{/exp:pvl_checkif}
+
+{exp:pvl_checkif value="{member_id}" is_in="1|5"}
+	<p>You've got the power!</p>
 {/exp:pvl_checkif}
 
 ------------------------------------------------------
