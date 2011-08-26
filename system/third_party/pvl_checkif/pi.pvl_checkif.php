@@ -76,6 +76,10 @@ class Pvl_checkif
     	$is_in		= $this->_ee->TMPL->fetch_param('is_in', '');
      	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
 
+     	// We parse global vars because we are very kind!
+		$value = $this->_ee->TMPL->parse_globals($value);
+		$is_in = $this->_ee->TMPL->parse_globals($is_in);
+
     	if ($value !== '' && $is_in !== '') {
 
 			$is_in = explode($separator, $is_in);
