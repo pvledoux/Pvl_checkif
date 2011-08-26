@@ -123,7 +123,7 @@ class Pvl_checkif
 
 			Examples:
 			{exp:pvl_checkif value="123" is_in="1|12|123"}
-				<p>Yes Sire!</p>
+				<p>Yes Sir!</p>
 			{/exp:pvl_checkif}
 
 			------------------------------------------------------
