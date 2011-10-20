@@ -4,7 +4,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $plugin_info = array(
 	'pi_name' => 'Pvl - checkif',
-	'pi_version' =>'0.1',
+	'pi_version' =>'0.2',
 	'pi_author' =>'Pierre-Vincent Ledoux',
 	'pi_author_email' =>'ee-addons@pvledoux.be',
 	'pi_author_url' => 'http://twitter.com/pvledoux/',
@@ -19,14 +19,14 @@ $plugin_info = array(
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *    * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *    * Neither the name of the <organization> nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *	* Redistributions of source code must retain the above copyright
+ *	   notice, this list of conditions and the following disclaimer.
+ *	* Redistributions in binary form must reproduce the above copyright
+ *	   notice, this list of conditions and the following disclaimer in the
+ *	   documentation and/or other materials provided with the distribution.
+ *	* Neither the name of the <organization> nor the
+ *	   names of its contributors may be used to endorse or promote products
+ *	   derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -100,33 +100,34 @@ class Pvl_checkif
 	private function _output()
 	{
 		//Get parameter
-    	$value		= $this->_ee->TMPL->fetch_param('value', '');
-    	$is_in		= $this->_ee->TMPL->fetch_param('is_in', '');
-     	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
+		$value		= $this->_ee->TMPL->fetch_param('value', '');
+		$is_in		= $this->_ee->TMPL->fetch_param('is_in', '');
+		$is_not_in	= $this->_ee->TMPL->fetch_param('is_not_in', '');
+	 	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
 
-     	// We parse global vars because we are very kind!
-		$value = $this->_ee->TMPL->parse_globals($value);
-		$is_in = $this->_ee->TMPL->parse_globals($is_in);
+	 	// We parse global vars because we are very kind!
+		$value		= $this->_ee->TMPL->parse_globals($value);
+		$is_in		= $this->_ee->TMPL->parse_globals($is_in);
+		$is_not_in	= $this->_ee->TMPL->parse_globals($is_not_in);
 
-    	if ($value !== '' && $is_in !== '') {
-
-			$is_in = explode($separator, $is_in);
-
-			if (is_array($is_in) && count($is_in)) {
-
-				if (in_array($value, $is_in)) {
-
-					return $this->_ee->TMPL->tagdata;
-
+		if ($value !== '') {
+			if ($is_in !== '') {
+				$is_in = explode($separator, $is_in);
+				if (is_array($is_in) && count($is_in)) {
+					if (in_array($value, $is_in)) {
+						return $this->_ee->TMPL->tagdata;
+					}
 				}
-
+			} elseif ($is_not_in !== '') {
+				$is_not_in = explode($separator, $is_not_in);
+				if (is_array($is_not_in) && count($is_not_in)) {
+					if (!in_array($value, $is_not_in)) {
+						return $this->_ee->TMPL->tagdata;
+					}
+				}
 			}
-
-    	} else {
-
-    		return '';
-
-    	}
+		}
+		return '';
 
 	}
 
@@ -145,7 +146,13 @@ class Pvl_checkif
 
 			Description:
 
-			Check if a value is in a list (default separator: |)
+			Check if a value is in a list (default separator: |) or if it isn't.
+
+			Parameters:
+
+				- value: required
+				- is_in: required if is_not_in is not set
+				- is_not_in: required if is_in is not set
 
 			------------------------------------------------------
 
