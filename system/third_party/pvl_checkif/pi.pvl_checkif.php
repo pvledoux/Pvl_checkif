@@ -4,11 +4,11 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $plugin_info = array(
 	'pi_name' => 'Pvl - checkif',
-	'pi_version' =>'0.2',
+	'pi_version' =>'0.3',
 	'pi_author' =>'Pierre-Vincent Ledoux',
 	'pi_author_email' =>'ee-addons@pvledoux.be',
 	'pi_author_url' => 'http://twitter.com/pvledoux/',
-	'pi_description' => 'Check if a value is in a list',
+	'pi_description' => 'Check if a value is in a list, or if it contains an other value',
 	'pi_usage' => Pvl_checkif::usage()
 );
 
@@ -101,6 +101,7 @@ class Pvl_checkif
 	{
 		//Get parameter
 		$value		= $this->_ee->TMPL->fetch_param('value', '');
+		$contains	= $this->_ee->TMPL->fetch_param('contains', '');
 		$is_in		= $this->_ee->TMPL->fetch_param('is_in', '');
 		$is_not_in	= $this->_ee->TMPL->fetch_param('is_not_in', '');
 	 	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
@@ -115,13 +116,47 @@ class Pvl_checkif
 				$is_in = explode($separator, $is_in);
 				if (is_array($is_in) && count($is_in)) {
 					if (in_array($value, $is_in)) {
-						return $this->_ee->TMPL->tagdata;
+						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
+							return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
+						} else {
+							return $this->_ee->TMPL->tagdata;
+						}
+					} else {
+						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
+							return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
+						} else {
+							return $this->_ee->TMPL->tagdata;
+						}
 					}
 				}
 			} elseif ($is_not_in !== '') {
 				$is_not_in = explode($separator, $is_not_in);
 				if (is_array($is_not_in) && count($is_not_in)) {
 					if (!in_array($value, $is_not_in)) {
+						if (strpos($this->_ee->TMPL->tagdata, '{else}') !== FALSE) {
+							return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
+						} else {
+							return $this->_ee->TMPL->tagdata;
+						}
+					} else {
+						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
+							return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
+						} else {
+							return $this->_ee->TMPL->tagdata;
+						}
+					}
+				}
+			} elseif ($contains !== '') {
+				if (strpos($value, $contains) !== FALSE) {
+					if (strpos($this->_ee->TMPL->tagdata, '{else}') !== FALSE) {
+						return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
+					} else {
+						return $this->_ee->TMPL->tagdata;
+					}
+				} else {
+					if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
+						return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
+					} else {
 						return $this->_ee->TMPL->tagdata;
 					}
 				}
@@ -153,12 +188,30 @@ class Pvl_checkif
 				- value: required
 				- is_in: required if is_not_in is not set
 				- is_not_in: required if is_in is not set
+				- contains: required if is_in or is_not_in are not set
 
 			------------------------------------------------------
 
 			Examples:
+			IS IN condition:
 			{exp:pvl_checkif value="123" is_in="1|12|123"}
-				<p>Yes Sir!</p>
+					<p>Yes Sir!</p>
+				{else}
+					<p>No Sir!</p>
+			{/exp:pvl_checkif}
+
+			IS NOT IN condition:
+			{exp:pvl_checkif value="123" is_not_in="1|12"}
+					<p>Yes Sir!</p>
+				{else}
+					<p>No Sir!</p>
+			{/exp:pvl_checkif}
+
+			CONTAINS condition:
+			{exp:pvl_checkif value="123" contains="12"}
+					<p>Yes Sir!</p>
+				{else}
+					<p>No Sir!</p>
 			{/exp:pvl_checkif}
 
 			------------------------------------------------------
