@@ -4,7 +4,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $plugin_info = array(
 	'pi_name' => 'Pvl - checkif',
-	'pi_version' =>'0.3',
+	'pi_version' =>'0.4',
 	'pi_author' =>'Pierre-Vincent Ledoux',
 	'pi_author_email' =>'ee-addons@pvledoux.be',
 	'pi_author_url' => 'http://twitter.com/pvledoux/',
@@ -14,7 +14,7 @@ $plugin_info = array(
 
 
 /**
- * Copyright (c) 2011, Pv Ledoux
+ * Copyright (c) 2012, Pv Ledoux
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ $plugin_info = array(
 /**
  * Pvl_checkif
  *
- * @copyright	Pv Ledoux 2011
+ * @copyright	Pv Ledoux 2012
  * @since		25 Aug 2011
  * @author		Pierre-Vincent Ledoux <ee-addons@pvledoux.be>
  * @link		http://www.twitter.com/pvledoux/
@@ -125,7 +125,7 @@ class Pvl_checkif
 						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
 							return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
 						} else {
-							return $this->_ee->TMPL->tagdata;
+							return NULL;
 						}
 					}
 				}
@@ -142,7 +142,7 @@ class Pvl_checkif
 						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
 							return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
 						} else {
-							return $this->_ee->TMPL->tagdata;
+							return NULL;
 						}
 					}
 				}
@@ -157,7 +157,7 @@ class Pvl_checkif
 					if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
 						return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
 					} else {
-						return $this->_ee->TMPL->tagdata;
+						return NULL;
 					}
 				}
 			}
@@ -189,6 +189,9 @@ class Pvl_checkif
 				- is_in: required if is_not_in is not set
 				- is_not_in: required if is_in is not set
 				- contains: required if is_in or is_not_in are not set
+				- **separator**: optional (default: |) you can change the list separator here.
+
+				*Value*, *is_in*, *is_not_in*, *contains* parameters can be global variables, entry field value, etc.
 
 			------------------------------------------------------
 
@@ -215,6 +218,32 @@ class Pvl_checkif
 			{/exp:pvl_checkif}
 
 			------------------------------------------------------
+
+			 * Copyright (c) 2012, Pv Ledoux
+			 * All rights reserved.
+			 *
+			 * Redistribution and use in source and binary forms, with or without
+			 * modification, are permitted provided that the following conditions are met:
+			 *	* Redistributions of source code must retain the above copyright
+			 *	   notice, this list of conditions and the following disclaimer.
+			 *	* Redistributions in binary form must reproduce the above copyright
+			 *	   notice, this list of conditions and the following disclaimer in the
+			 *	   documentation and/or other materials provided with the distribution.
+			 *	* Neither the name of the <organization> nor the
+			 *	   names of its contributors may be used to endorse or promote products
+			 *	   derived from this software without specific prior written permission.
+			 *
+			 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+			 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+			 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+			 * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+			 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+			 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+			 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+			 * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+			 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+			 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+			 *
 
 		<?php
 		$buffer = ob_get_contents();
