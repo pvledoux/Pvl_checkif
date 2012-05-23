@@ -106,10 +106,13 @@ class Pvl_checkif
 		$is_not_in	= $this->_ee->TMPL->fetch_param('is_not_in', '');
 	 	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
 
-	 	// We parse global vars because we are very kind!
+	 	// We parse global vars because we are very kind! (and we re-parse 'external' global vars)
 		$value		= $this->_ee->TMPL->parse_globals($value);
+		$value		= $this->_ee->TMPL->parse_variables($value, array($this->_ee->config->_global_vars));
 		$is_in		= $this->_ee->TMPL->parse_globals($is_in);
+		$is_in		= $this->_ee->TMPL->parse_variables($is_in, array($this->_ee->config->_global_vars));
 		$is_not_in	= $this->_ee->TMPL->parse_globals($is_not_in);
+		$is_not_in	= $this->_ee->TMPL->parse_variables($is_not_in, array($this->_ee->config->_global_vars));
 
 		if ($value !== '') {
 			if ($is_in !== '') {
