@@ -107,12 +107,9 @@ class Pvl_checkif
 	 	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
 
 	 	// We parse global vars because we are very kind! (and we re-parse 'external' global vars)
-		$value		= $this->_ee->TMPL->parse_globals($value);
-		$value		= $this->_ee->TMPL->parse_variables($value, array($this->_ee->config->_global_vars));
-		$is_in		= $this->_ee->TMPL->parse_globals($is_in);
-		$is_in		= $this->_ee->TMPL->parse_variables($is_in, array($this->_ee->config->_global_vars));
-		$is_not_in	= $this->_ee->TMPL->parse_globals($is_not_in);
-		$is_not_in	= $this->_ee->TMPL->parse_variables($is_not_in, array($this->_ee->config->_global_vars));
+		$value = $this->_get_global_variable($value);
+		$is_in = $this->_get_global_variable($is_in);
+		$is_not_in = $this->_get_global_variable($is_not_in);		
 
 		if ($value !== '') {
 			if ($is_in !== '') {
@@ -167,6 +164,27 @@ class Pvl_checkif
 		}
 		return '';
 
+	}
+
+	/**
+	 * Private function to get a global variable
+	 * @param string Name of the variable
+	 * @return mixed Value of this variable
+	 */
+	private function _get_global_variable($var)
+	{
+		static $global_variables;
+		
+		if(!isset($global_variables[$var])) {
+			if(array_key_exists($var, $this->_ee->config->_global_vars)) {
+				$global_variables[$var] = $this->_ee->config->_global_vars[$var];
+			}
+			else {
+				$global_variables[$var] = $this->_ee->TMPL->parse_globals($var);
+			}
+		}
+		
+		return $global_variables[$var];
 	}
 
 	/**
