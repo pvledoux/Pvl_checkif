@@ -4,7 +4,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $plugin_info = array(
 	'pi_name' => 'Pvl - checkif',
-	'pi_version' =>'0.4',
+	'pi_version' =>'0.5',
 	'pi_author' =>'Pierre-Vincent Ledoux',
 	'pi_author_email' =>'ee-addons@pvledoux.be',
 	'pi_author_url' => 'http://twitter.com/pvledoux/',
@@ -107,9 +107,9 @@ class Pvl_checkif
 	 	$separator	= $this->_ee->TMPL->fetch_param('separator', '|');
 
 	 	// We parse global vars because we are very kind! (and we re-parse 'external' global vars)
-		$value = $this->_get_global_variable($value);
-		$is_in = $this->_get_global_variable($is_in);
-		$is_not_in = $this->_get_global_variable($is_not_in);		
+		$value		= $this->_get_global_variable($value);
+		$is_in		= $this->_get_global_variable($is_in);
+		$is_not_in	= $this->_get_global_variable($is_not_in);
 
 		if ($value !== '') {
 			if ($is_in !== '') {
@@ -168,13 +168,15 @@ class Pvl_checkif
 
 	/**
 	 * Private function to get a global variable
+	 * @author @kant312
 	 * @param string Name of the variable
 	 * @return mixed Value of this variable
+	 * @since 0.5
 	 */
 	private function _get_global_variable($var)
 	{
 		static $global_variables;
-		
+
 		if(!isset($global_variables[$var])) {
 			if(array_key_exists($var, $this->_ee->config->_global_vars)) {
 				$global_variables[$var] = $this->_ee->config->_global_vars[$var];
@@ -183,7 +185,7 @@ class Pvl_checkif
 				$global_variables[$var] = $this->_ee->TMPL->parse_globals($var);
 			}
 		}
-		
+
 		return $global_variables[$var];
 	}
 
