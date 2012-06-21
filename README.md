@@ -39,6 +39,9 @@ Pvl Checkif is an ExpresionEngine plugin that checks if a value is in a list (de
 
 ##Release logs
 
+###v0.5
+- Improved preformance by adding static cache when parsing global variables
+
 ###v0.4
 - Re-parse global variables stored in config files (see bug at http://expressionengine.com/bug_tracker/bug/17801)
 - Giga error when the condition is false
