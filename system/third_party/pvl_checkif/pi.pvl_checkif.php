@@ -124,12 +124,10 @@ class Pvl_checkif
 
 		$name = str_replace(' ', '_', $name);
 		$name = ucfirst(strtolower($name));
-		$this->_ee->db->save_queries = TRUE;
 		$query = $this->_ee->db->select($addon_types[$addon_type]['identifier'])
 								->from($addon_types[$addon_type]['table'])
 								->like($addon_types[$addon_type]['identifier'], $name)
 								->get();
-		var_dump($this->_ee->db->queries);
 
 		return $this->_return_else($query->num_rows() > 0);
 	}
