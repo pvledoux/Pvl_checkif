@@ -14,7 +14,7 @@ $plugin_info = array(
 
 
 /**
- * Copyright (c) 2012, Pv Ledoux
+ * Copyright (c) 2014, Pv Ledoux
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ $plugin_info = array(
 /**
  * Pvl_checkif
  *
- * @copyright	Pv Ledoux 2012
+ * @copyright	Pv Ledoux 2014
  * @since		25 Aug 2011
  * @author		Pierre-Vincent Ledoux <ee-addons@pvledoux.be>
  * @link		http://www.twitter.com/pvledoux/
@@ -59,7 +59,6 @@ class Pvl_checkif
 	* @var		array
 	*/
 	public $return_data = '';
-
 
 	private $_ee = NULL;
 
@@ -89,28 +88,50 @@ class Pvl_checkif
 		$this->__construct();
 	}
 
+	/**
+	 * Check if extension exists
+	 *
+	 * @return string
+	 * @since 0.6
+	 */
 	public function extension()
 	{
-		return $this->_check_addon('extension');
+		return $this->_check_addon('ext');
 
 	}
 
+	/**
+	 * Check if module exists
+	 *
+	 * @return string
+	 * @since 0.6
+	 */
 	public function module()
 	{
-		return $this->_check_addon('module');
+		return $this->_check_addon('mod');
 
 	}
 
-
+	/**
+	 * Check if extension or module exists
+	 *
+	 * @param string $addon_type (ext or mod)
+	 *
+	 * @return string
+	 * @since 0.6
+	 */
 	private function _check_addon($addon_type)
 	{
+		static $_installed_addons;
+
+		$is_installed = false;
 
 		$addon_types = array(
-			'extension' => array(
+			'ext' => array(
 					'table' => 'extensions',
 					'identifier' => 'class'
 				),
-			'module' => array(
+			'mod' => array(
 				'table' => 'modules',
 				'identifier' => 'module_name'
 			)
@@ -121,15 +142,23 @@ class Pvl_checkif
 		if ($name === '') {
 			return;
 		}
-
 		$name = str_replace(' ', '_', $name);
 		$name = ucfirst(strtolower($name));
+
+		// Check cache first
+		if (isset($_installed_addons[$addon_type][$name]) && $_installed_addons[$addon_type][$name] === true){
+			return $this->_return_else(true);
+		}
+
 		$query = $this->_ee->db->select($addon_types[$addon_type]['identifier'])
 								->from($addon_types[$addon_type]['table'])
 								->like($addon_types[$addon_type]['identifier'], $name)
 								->get();
 
-		return $this->_return_else($query->num_rows() > 0);
+		$is_installed = ($query->num_rows() > 0);
+		$_installed_addons[$addon_type][$name] = $is_installed;
+
+		return $this->_return_else($is_installed);
 	}
 
 	/**
