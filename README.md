@@ -2,6 +2,8 @@
 
 Pvl Checkif is an ExpresionEngine plugin that checks if a value is in a list (default separator: |) or if it isn't.
 
+This plugin can also check if a module or extension is installed.
+
 ##Parameters:
 
 - **value**: required
@@ -37,7 +39,29 @@ Pvl Checkif is an ExpresionEngine plugin that checks if a value is in a list (de
 	{/exp:pvl_checkif}
 
 
+
+###Check if a module is installed:
+	{exp:pvl_checkif:module is_installed="playa"}
+		<p>Playa is installed</p>
+	{/exp:pvl_checkif:module}
+
+###Check if a extension is installed:
+	{exp:pvl_checkif:extension is_installed="Mo_variables"}
+		<p>Mo' Variables is installed</p>
+	{/exp:pvl_checkif:extension}
+
+
+
+
 ##Release logs
+
+###v0.6
+- check if module or extension is installed
+- coded refactored
+- copyright updated
+
+###v0.5
+- I think I forgot that one
 
 ###v0.4
 - Re-parse global variables stored in config files (see bug at http://expressionengine.com/bug_tracker/bug/17801)

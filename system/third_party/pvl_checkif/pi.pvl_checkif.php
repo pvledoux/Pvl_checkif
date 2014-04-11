@@ -4,7 +4,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 $plugin_info = array(
 	'pi_name' => 'Pvl - checkif',
-	'pi_version' =>'0.5',
+	'pi_version' =>'0.6',
 	'pi_author' =>'Pierre-Vincent Ledoux',
 	'pi_author_email' =>'ee-addons@pvledoux.be',
 	'pi_author_url' => 'http://twitter.com/pvledoux/',
@@ -89,6 +89,74 @@ class Pvl_checkif
 		$this->__construct();
 	}
 
+	public function extension()
+	{
+		return $this->_check_addon('extension');
+
+	}
+
+	public function module()
+	{
+		return $this->_check_addon('module');
+
+	}
+
+
+	private function _check_addon($addon_type)
+	{
+
+		$addon_types = array(
+			'extension' => array(
+					'table' => 'extensions',
+					'identifier' => 'class'
+				),
+			'module' => array(
+				'table' => 'modules',
+				'identifier' => 'module_name'
+			)
+		);
+
+		$name = $this->_ee->TMPL->fetch_param('is_installed', '');
+
+		if ($name === '') {
+			return;
+		}
+
+		$name = str_replace(' ', '_', $name);
+		$name = ucfirst(strtolower($name));
+		$this->_ee->db->save_queries = TRUE;
+		$query = $this->_ee->db->select($addon_types[$addon_type]['identifier'])
+								->from($addon_types[$addon_type]['table'])
+								->like($addon_types[$addon_type]['identifier'], $name)
+								->get();
+		var_dump($this->_ee->db->queries);
+
+		return $this->_return_else($query->num_rows() > 0);
+	}
+
+	/**
+	 * Return tag data before or
+	 * after the {else} tag if any
+	 * @param  bool $result
+	 * @return string
+	 */
+	private function _return_else($result)
+	{
+		if ($result === TRUE) {
+			if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
+				return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
+			} else {
+				return $this->_ee->TMPL->tagdata;
+			}
+		} else {
+			if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
+				return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
+			} else {
+				return NULL;
+			}
+		}
+	}
+
 
 	/**
 	 * Check if a value is part of a list,
@@ -115,51 +183,15 @@ class Pvl_checkif
 			if ($is_in !== '') {
 				$is_in = explode($separator, $is_in);
 				if (is_array($is_in) && count($is_in)) {
-					if (in_array($value, $is_in)) {
-						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
-							return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
-						} else {
-							return $this->_ee->TMPL->tagdata;
-						}
-					} else {
-						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
-							return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
-						} else {
-							return NULL;
-						}
-					}
+					return $this->_return_else(in_array($value, $is_in));
 				}
 			} elseif ($is_not_in !== '') {
 				$is_not_in = explode($separator, $is_not_in);
 				if (is_array($is_not_in) && count($is_not_in)) {
-					if (!in_array($value, $is_not_in)) {
-						if (strpos($this->_ee->TMPL->tagdata, '{else}') !== FALSE) {
-							return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
-						} else {
-							return $this->_ee->TMPL->tagdata;
-						}
-					} else {
-						if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
-							return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
-						} else {
-							return NULL;
-						}
-					}
+					return $this->_return_else(!in_array($value, $is_not_in));
 				}
 			} elseif ($contains !== '') {
-				if (strpos($value, $contains) !== FALSE) {
-					if (strpos($this->_ee->TMPL->tagdata, '{else}') !== FALSE) {
-						return substr($this->_ee->TMPL->tagdata, 0, strpos($this->_ee->TMPL->tagdata, '{else}'));
-					} else {
-						return $this->_ee->TMPL->tagdata;
-					}
-				} else {
-					if (strpos($this->_ee->TMPL->tagdata, '{else}')) {
-						return substr($this->_ee->TMPL->tagdata, strpos($this->_ee->TMPL->tagdata, '{else}')+6, strlen($this->_ee->TMPL->tagdata));
-					} else {
-						return NULL;
-					}
-				}
+				return $this->_return_else(strpos($value, $contains) !== FALSE);
 			}
 		}
 		return '';
@@ -205,6 +237,7 @@ class Pvl_checkif
 			Description:
 
 			Check if a value is in a list (default separator: |) or if it isn't.
+			It can check also if a module or an extension is installed.
 
 			Parameters:
 
@@ -240,9 +273,19 @@ class Pvl_checkif
 					<p>No Sir!</p>
 			{/exp:pvl_checkif}
 
+			Check if a module is installed:
+			{exp:pvl_checkif:module is_installed="playa"}
+				<p>Playa is installed</p>
+			{/exp:pvl_checkif:module}
+
+			Check if a extension is installed:
+			{exp:pvl_checkif:extension is_installed="Mo_variables"}
+				<p>Mo' Variables is installed</p>
+			{/exp:pvl_checkif:extension}
+
 			------------------------------------------------------
 
-			 * Copyright (c) 2012, Pv Ledoux
+			 * Copyright (c) 2014, Pv Ledoux
 			 * All rights reserved.
 			 *
 			 * Redistribution and use in source and binary forms, with or without
@@ -252,14 +295,14 @@ class Pvl_checkif
 			 *	* Redistributions in binary form must reproduce the above copyright
 			 *	   notice, this list of conditions and the following disclaimer in the
 			 *	   documentation and/or other materials provided with the distribution.
-			 *	* Neither the name of the <organization> nor the
+			 *	* Neither the name of the product nor the
 			 *	   names of its contributors may be used to endorse or promote products
 			 *	   derived from this software without specific prior written permission.
 			 *
 			 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 			 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 			 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-			 * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+			 * DISCLAIMED. IN NO EVENT SHALL PV LEDOUX BE LIABLE FOR ANY
 			 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 			 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 			 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
