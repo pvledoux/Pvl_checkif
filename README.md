@@ -55,18 +55,13 @@ This plugin can also check if a module or extension is installed.
 
 ##Release logs
 
-<<<<<<< HEAD
 ###v0.6
 - check if module or extension is installed
 - coded refactored
 - copyright updated
 
 ###v0.5
-- I think I forgot that one
-=======
-###v0.5
 - Improved preformance by adding static cache when parsing global variables
->>>>>>> FETCH_HEAD
 
 ###v0.4
 - Re-parse global variables stored in config files (see bug at http://expressionengine.com/bug_tracker/bug/17801)
